@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Note - AI Knowledge Vault{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Edit Note</h1>
+    <form method="POST" action="{{ url_for('edit_note', note_id=note.id) }}">
+        <div class="form-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" name="title" value="{{ note.title }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="content">Content *</label>
+            <textarea id="content" name="content" rows="15" required>{{ note.content }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="tags">Tags (comma-separated)</label>
+            <input type="text" id="tags" name="tags" value="{{ note.tags|join(', ') }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" value="{{ note.category or '' }}">
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('view_note', note_id=note.id) }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update Note</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Search - AI Knowledge Vault{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <h1>Semantic Search</h1>
+    
+    <div class="search-box">
+        <form method="GET" action="{{ url_for('search') }}">
+            <input type="text" name="q" placeholder="Search notes semantically..." value="{{ query }}" autofocus>
+            <button type="submit" class="btn btn-search">Search</button>
+        </form>
+    </div>
+    
+    {% if query %}
+        {% if results %}
+            <div class="search-results">
+                <h2>Found {{ results|length }} result(s) for "{{ query }}"</h2>
+                <div class="notes-grid">
+                    {% for result in results %}
+                    <div class="note-card">
+                        <div class="note-header">
+                            <h3><a href="{{ url_for('view_note', note_id=result.id) }}">{{ result.title }}</a></h3>
+                        </div>
+                        <p class="note-preview">{{ result.content[:200] }}{% if result.content|length > 200 %}...{% endif %}</p>
+                        <div class="note-footer">
+                            {% if result.category %}
+                            <span class="note-category">{{ result.category }}</span>
+                            {% endif %}
+                            {% if result.tags %}
+                            <div class="note-tags">
+                                {% for tag in result.tags %}
+                                <span class="tag">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if result.similarity %}
+                            <span class="similarity-score">{{ (result.similarity * 100)|int }}% match</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No results found for "{{ query }}"</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="search-info">
+            <p>Enter a search query above to find notes using semantic search. The AI will understand the meaning of your query, not just match keywords.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
