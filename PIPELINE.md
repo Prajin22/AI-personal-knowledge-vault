@@ -36,7 +36,7 @@ Ranked Results
 
 ### Implementation
 ```python
-# backend/services/preprocessor.py
+# services/preprocessor.py
 class Preprocessor:
     @staticmethod
     def preprocess(text: str) -> str:
@@ -62,7 +62,7 @@ class Preprocessor:
 
 ### Implementation
 ```python
-# backend/services/chunker.py
+# services/chunker.py
 class Chunker:
     def __init__(self, chunk_size: int = 250, overlap: int = 25):
         self.chunk_size = chunk_size  # 200-300 words
@@ -94,7 +94,7 @@ class Chunker:
 
 ### Implementation
 ```python
-# backend/services/vector_store.py
+# services/vector_store.py
 self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 embedding = model.encode(text, normalize_embeddings=True)
 ```
@@ -124,7 +124,7 @@ embedding = model.encode(text, normalize_embeddings=True)
 
 ### Implementation
 ```python
-# backend/services/vector_store.py
+# services/vector_store.py
 import faiss
 
 # Initialize index
@@ -248,7 +248,7 @@ results = rank_by_similarity(distances, indices)
 ## File Structure
 
 ```
-backend/services/
+services/
 ├── preprocessor.py      # Minimal text preprocessing
 ├── chunker.py          # Document chunking (200-300 words, 20-30 overlap)
 ├── vector_store.py     # FAISS + Embeddings + Search

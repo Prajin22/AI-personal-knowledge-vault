@@ -41,7 +41,7 @@ Raw Text → Preprocessing → Chunking → BERT Embeddings → FAISS Index → 
 - **Transformers**: NLP models for text summarization
 - **JSON Storage**: Simple file-based storage for note metadata
 
-**See [PIPELINE.md](backend/PIPELINE.md) for detailed architecture documentation.**
+**See [PIPELINE.md](PIPELINE.md) for detailed architecture documentation.**
 
 ### Frontend
 - **React**: Modern UI framework
@@ -59,9 +59,9 @@ Raw Text → Preprocessing → Chunking → BERT Embeddings → FAISS Index → 
 
 ### Backend Setup
 
-1. Navigate to the backend directory:
+1. Navigate to the project root directory:
 ```bash
-cd "AI personal knowledge vault/backend"
+cd "AI personal knowledge vault"
 ```
 
 2. Create a virtual environment (recommended):
@@ -105,9 +105,9 @@ npm install
 
 ### Start the Backend
 
-1. Navigate to the backend directory:
+1. Navigate to the project root directory:
 ```bash
-cd "AI personal knowledge vault/backend"
+cd "AI personal knowledge vault"
 ```
 
 2. Activate your virtual environment (if using one)
@@ -200,9 +200,9 @@ The frontend will be available at `http://localhost:3000`
 
 ## Data Storage
 
-- **Notes**: Stored as JSON files in `backend/data/notes/`
-- **Vector Embeddings**: Stored in `backend/data/faiss_db/` (FAISS index + metadata)
-- **Index**: Metadata index in `backend/data/notes/index.json`
+- **Notes**: Stored as JSON files in `data/notes/`
+- **Vector Embeddings**: Stored in `data/faiss_db/` (FAISS index + metadata)
+- **Index**: Metadata index in `data/notes/index.json`
 
 ## Technology Stack
 
@@ -245,7 +245,7 @@ The frontend will be available at `http://localhost:3000`
 
 ### Changing the Embedding Model
 
-Edit `backend/services/vector_store.py`:
+Edit `services/vector_store.py`: 
 ```python
 self.embedding_model = SentenceTransformer('your-model-name')
 self.embedding_dim = <new_dimension>  # Update dimension!
@@ -255,11 +255,11 @@ Popular alternatives:
 - `all-mpnet-base-v2` - Better quality, larger (768 dims)
 - `paraphrase-multilingual-MiniLM-L12-v2` - Multilingual support (384 dims)
 
-**Note**: If changing models, delete `backend/data/faiss_db/` to rebuild the index.
+**Note**: If changing models, delete `data/faiss_db/` to rebuild the index.
 
 ### Changing the Summarization Model
 
-Edit `backend/services/summarizer.py`:
+Edit `services/summarizer.py`:
 ```python
 self.summarizer = pipeline(
     "summarization",
@@ -279,7 +279,7 @@ self.summarizer = pipeline(
 - **Solution**: Use smaller models or reduce batch sizes. The default models are optimized for efficiency.
 
 **Problem**: FAISS index errors
-- **Solution**: Delete `backend/data/faiss_db/` and restart. The index will be recreated.
+- **Solution**: Delete `data/faiss_db/` and restart. The index will be recreated.
 
 ### Frontend Issues
 

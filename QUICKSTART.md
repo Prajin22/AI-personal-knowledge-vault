@@ -14,7 +14,7 @@ Make sure you have:
 
 ### 1. Start the Backend
 
-Open a terminal in the `backend` folder and run:
+Open a terminal in the project root and run:
 ```bash
 start.bat
 ```
@@ -48,7 +48,7 @@ Open your browser and go to: **http://localhost:3000**
 
 ### 1. Start the Backend
 
-Open a terminal in the `backend` folder and run:
+Open a terminal in the project root and run:
 ```bash
 chmod +x start.sh
 ./start.sh

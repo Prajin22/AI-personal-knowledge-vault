@@ -1,7 +1,11 @@
 """Summarizer Service"""
 
-from transformers import pipeline
 from typing import Optional
+from typing import List
+import logging
+import re
+
+logger = logging.getLogger(__name__)
 import re
 
 class Summarizer:
@@ -9,21 +13,32 @@ class Summarizer:
     
     def __init__(self):
         """Initialize the summarization pipeline."""
+        # Lazy initialize; heavy imports are done on-demand
+        self.summarizer = None
+        self._load_error = None
+
+    def _load_pipeline(self):
+        """Attempt to import transformers.pipeline and instantiate a summarizer."""
         try:
-            self.summarizer = pipeline(
-                "summarization",
-                model="facebook/bart-large-cnn",
-                device=-1
-            )
-        except Exception:
+            from transformers import pipeline
+
             try:
+                self.summarizer = pipeline(
+                    "summarization",
+                    model="facebook/bart-large-cnn",
+                    device=-1
+                )
+            except Exception:
+                # Fallback to a smaller model
                 self.summarizer = pipeline(
                     "summarization",
                     model="sshleifer/distilbart-cnn-12-6",
                     device=-1
                 )
-            except Exception:
-                self.summarizer = None
+        except Exception as e:
+            self.summarizer = None
+            self._load_error = e
+            logger.warning("Could not load transformers summarization pipeline: %s", e)
     
     def summarize(
         self,
@@ -38,6 +53,13 @@ class Summarizer:
         if len(text) <= max_length:
             return text.strip()
         
+        if self.summarizer is None:
+            try:
+                self._load_pipeline()
+            except Exception:
+                # _load_pipeline should capture and log detail; fall through to extractive
+                pass
+
         if self.summarizer:
             try:
                 max_input_length = 1024

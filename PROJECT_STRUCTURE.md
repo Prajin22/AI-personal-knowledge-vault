@@ -3,11 +3,8 @@
 ```
 AI personal knowledge vault/
 │
-├── backend/                    # Backend API (FastAPI)
-│   ├── main.py                # Main FastAPI application and API endpoints
+├── main.py                    # Main backend application and API endpoints
 │   ├── requirements.txt       # Python dependencies
-│   ├── start.bat              # Windows startup script
-│   ├── start.sh               # Unix/Mac startup script
 │   ├── .env.example           # Environment configuration template
 │   │
 │   ├── services/              # Core business logic services
@@ -45,7 +42,7 @@ AI personal knowledge vault/
 
 ## Key Components
 
-### Backend (`backend/`)
+### Backend (project root)
 
 #### `main.py`
 - FastAPI application setup
@@ -139,12 +136,12 @@ AI personal knowledge vault/
 
 ### Notes
 - Format: JSON files
-- Location: `backend/data/notes/{note_id}.json`
-- Index: `backend/data/notes/index.json`
+- Location: `data/notes/{note_id}.json`
+- Index: `data/notes/index.json`
 
 ### Vector Embeddings
 - Format: FAISS index files (.index) + metadata pickle (.pkl)
-- Location: `backend/data/faiss_db/`
+- Location: `data/faiss_db/`
 - Contains: Document embeddings (chunked) and metadata
 - Index Type: IndexFlatL2 (L2 distance for cosine similarity)
 
@@ -173,7 +170,7 @@ AI personal knowledge vault/
 ## Development Workflow
 
 1. **Backend Development**:
-   - Edit Python files in `backend/`
+   - Edit Python files in the project root (e.g., `main.py`, `services/`)
    - Changes auto-reload with `--reload` flag
    - Test at `http://localhost:8000/docs`
 
@@ -185,14 +182,14 @@ AI personal knowledge vault/
 3. **Data Management**:
    - Notes stored as JSON (human-readable)
    - Vector DB managed by ChromaDB
-   - Backup: Copy `backend/data/` folder
+   - Backup: Copy `data/` folder
 
 ## Extension Points
 
 ### Adding New Features
 
 1. **New API Endpoint**:
-   - Add route in `backend/main.py`
+   - Add route in `main.py`
    - Add service method if needed
    - Update frontend to call endpoint
 
@@ -202,12 +199,12 @@ AI personal knowledge vault/
    - Add styles in `App.css`
 
 3. **Custom Embedding Model**:
-   - Modify `backend/services/vector_store.py`
+   - Modify `services/vector_store.py`
    - Change `SentenceTransformer` model name
    - Re-index existing notes
 
 4. **Custom Summarizer**:
-   - Modify `backend/services/summarizer.py`
+   - Modify `services/summarizer.py`
    - Change transformer model
    - Adjust parameters
 

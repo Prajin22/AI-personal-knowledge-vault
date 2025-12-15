@@ -4,7 +4,6 @@ import faiss
 import numpy as np
 import pickle
 from pathlib import Path
-from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Optional
 
 from .preprocessor import Preprocessor
@@ -15,8 +14,22 @@ class VectorStore:
     
     def __init__(self, collection_name: str = "knowledge_vault"):
         """Initialize the vector store with FAISS and sentence transformers."""
-        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        # Lazy-load the embedding model to avoid import-time hangs
+        self.embedding_model = None
+        self._load_error = None
         self.embedding_dim = 384  # Dimension for all-MiniLM-L6-v2
+
+    def _load_embedding_model(self):
+        """Attempt to import and instantiate the sentence-transformers model.
+
+        Raises the original exception if loading fails.
+        """
+        try:
+            from sentence_transformers import SentenceTransformer
+            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        except Exception:
+            # Leave embedding_model as None and re-raise so callers can handle.
+            raise
         
         # Initialize preprocessing and chunking
         self.preprocessor = Preprocessor()
@@ -70,6 +83,15 @@ class VectorStore:
     
     def generate_embedding(self, text: str) -> np.ndarray:
         """Generate embedding for a text."""
+        if self.embedding_model is None:
+            # Try to load on-demand; raise a helpful error if it fails
+            try:
+                self._load_embedding_model()
+            except Exception:
+                raise RuntimeError(
+                    "Embedding model not available. Check your environment and install sentence-transformers."
+                )
+
         preprocessed = self.preprocessor.preprocess(text)
         embedding = self.embedding_model.encode(preprocessed, convert_to_numpy=True)
         embedding = embedding / np.linalg.norm(embedding)
@@ -89,6 +111,12 @@ class VectorStore:
         if not chunks:
             return
         
+        if self.embedding_model is None:
+            try:
+                self._load_embedding_model()
+            except Exception:
+                raise RuntimeError("Embedding model not available. Cannot add documents.")
+
         chunk_texts = [chunk['text'] for chunk in chunks]
         embeddings = self.embedding_model.encode(
             chunk_texts,

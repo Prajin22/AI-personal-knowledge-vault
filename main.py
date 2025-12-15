@@ -1,19 +1,9 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import os
-try:
-    # When running from inside the `backend/` folder (python main.py)
-    # the package name is `services`.
-    from services.vector_store import VectorStore
-    from services.summarizer import Summarizer
-    from services.note_manager import NoteManager
-    from services.answer_generator import AnswerGenerator
-except ModuleNotFoundError:
-    # When running from project root (python -m backend.main) the
-    # package is `backend.services`.
-    from backend.services.vector_store import VectorStore
-    from backend.services.summarizer import Summarizer
-    from backend.services.note_manager import NoteManager
-    from backend.services.answer_generator import AnswerGenerator
+from services.vector_store import VectorStore
+from services.summarizer import Summarizer
+from services.note_manager import NoteManager
+from services.answer_generator import AnswerGenerator
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -28,7 +18,7 @@ answer_generator = AnswerGenerator()
 if vector_store.embedding_model is None:
     app.logger.warning(
         "Embedding model not loaded; semantic search and document adding will fail until sentence-transformers can be imported.\n"
-        "To fix: activate your virtualenv and run `pip install -r backend/requirements.txt`."
+        "To fix: activate your virtualenv and run `pip install -r requirements.txt`."
     )
 
 @app.route('/')
