@@ -16,6 +16,8 @@ class NoteManager:
         """Initialize note manager with dependencies"""
         self.vector_store = vector_store
         self.summarizer = summarizer
+        # Track last indexing error to communicate to callers
+        self._last_indexing_error: Optional[Exception] = None
         
         # Storage directory for notes metadata
         self.storage_dir = Path(__file__).parent.parent / "data" / "notes"
@@ -102,7 +104,13 @@ class NoteManager:
             "category": category or "",
             "tags": ",".join(tags or [])
         }
-        self.vector_store.add_document(note_id, searchable_text, metadata)
+        try:
+            self.vector_store.add_document(note_id, searchable_text, metadata)
+            self._last_indexing_error = None
+        except Exception as e:
+            # Don't fail note creation if embedding/indexing isn't available.
+            self._last_indexing_error = e
+            print(f"Indexing failed for note {note_id}: {e}")
         
         return note_id
     
@@ -157,7 +165,12 @@ class NoteManager:
             "category": note.get("category") or "",
             "tags": ",".join(note.get("tags", []))
         }
-        self.vector_store.update_document(note_id, searchable_text, metadata)
+        try:
+            self.vector_store.update_document(note_id, searchable_text, metadata)
+            self._last_indexing_error = None
+        except Exception as e:
+            self._last_indexing_error = e
+            print(f"Index update failed for note {note_id}: {e}")
         
         return True
     

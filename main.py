@@ -64,7 +64,10 @@ def create_note():
             tags=tags,
             category=category
         )
-        flash('Note created successfully!', 'success')
+        if getattr(note_manager, '_last_indexing_error', None):
+            flash('Note saved but indexing failed (embedding model unavailable). Install sentence-transformers to enable semantic search.', 'warning')
+        else:
+            flash('Note created successfully!', 'success')
         return redirect(url_for('view_note', note_id=note_id))
     
     return render_template('create.html')
@@ -93,7 +96,10 @@ def edit_note(note_id):
             'tags': tags,
             'category': category
         })
-        flash('Note updated successfully!', 'success')
+        if getattr(note_manager, '_last_indexing_error', None):
+            flash('Note updated but indexing failed (embedding model unavailable). Install sentence-transformers to enable semantic search.', 'warning')
+        else:
+            flash('Note updated successfully!', 'success')
         return redirect(url_for('view_note', note_id=note_id))
     
     return render_template('edit.html', note=note)
@@ -181,8 +187,12 @@ def add_note_api():
         tags=tags if isinstance(tags, list) else [],
         category=category
     )
-    
-    return jsonify({'status': 'note added', 'note_id': note_id})
+    indexed = getattr(note_manager, '_last_indexing_error', None) is None
+    resp = {'status': 'note added', 'note_id': note_id, 'indexed': indexed}
+    if not indexed:
+        resp['indexing_error'] = str(note_manager._last_indexing_error)
+
+    return jsonify(resp)
 
 @app.route('/search', methods=['POST'])
 def search_api():
