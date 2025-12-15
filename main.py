@@ -143,6 +143,8 @@ def health():
         details['embedding_error'] = str(vector_store._load_error)
     if getattr(summarizer, '_load_error', None):
         details['summarizer_error'] = str(summarizer._load_error)
+    if getattr(note_manager, '_last_indexing_error', None):
+        details['last_indexing_error'] = str(note_manager._last_indexing_error)
 
     return jsonify({
         'status': 'ok',
