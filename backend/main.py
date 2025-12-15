@@ -1,9 +1,19 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import os
-from services.vector_store import VectorStore
-from services.summarizer import Summarizer
-from services.note_manager import NoteManager
-from services.answer_generator import AnswerGenerator
+try:
+    # When running from inside the `backend/` folder (python main.py)
+    # the package name is `services`.
+    from services.vector_store import VectorStore
+    from services.summarizer import Summarizer
+    from services.note_manager import NoteManager
+    from services.answer_generator import AnswerGenerator
+except ModuleNotFoundError:
+    # When running from project root (python -m backend.main) the
+    # package is `backend.services`.
+    from backend.services.vector_store import VectorStore
+    from backend.services.summarizer import Summarizer
+    from backend.services.note_manager import NoteManager
+    from backend.services.answer_generator import AnswerGenerator
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -13,6 +23,13 @@ vector_store = VectorStore()
 summarizer = Summarizer()
 note_manager = NoteManager(vector_store, summarizer)
 answer_generator = AnswerGenerator()
+
+# If the embedding model couldn't be loaded at startup, warn but keep the app running.
+if vector_store.embedding_model is None:
+    app.logger.warning(
+        "Embedding model not loaded; semantic search and document adding will fail until sentence-transformers can be imported.\n"
+        "To fix: activate your virtualenv and run `pip install -r backend/requirements.txt`."
+    )
 
 @app.route('/')
 def index():
@@ -113,6 +130,25 @@ def stats():
     categories = note_manager.get_categories()
     tags = note_manager.get_tags()
     return render_template('stats.html', stats=stats_data, categories=categories, tags=tags)
+
+
+@app.route('/health')
+def health():
+    """Health endpoint reporting availability of heavy models."""
+    embedding_ok = vector_store.embedding_model is not None
+    summarizer_ok = getattr(summarizer, 'summarizer', None) is not None
+    details = {}
+    if getattr(vector_store, '_load_error', None):
+        details['embedding_error'] = str(vector_store._load_error)
+    if getattr(summarizer, '_load_error', None):
+        details['summarizer_error'] = str(summarizer._load_error)
+
+    return jsonify({
+        'status': 'ok',
+        'embedding_model_loaded': embedding_ok,
+        'summarizer_loaded': summarizer_ok,
+        'details': details
+    })
 
 @app.route('/api/summarize/<note_id>')
 def api_summarize(note_id):
