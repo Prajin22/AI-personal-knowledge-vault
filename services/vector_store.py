@@ -19,6 +19,26 @@ class VectorStore:
         self._load_error = None
         self.embedding_dim = 384  # Dimension for all-MiniLM-L6-v2
 
+        # Preprocessor and chunker are lightweight and available even when
+        # the embedding model isn't loaded; initialize them so methods like
+        # `search()` can preprocess queries without requiring sentence-transformers.
+        self.preprocessor = Preprocessor()
+        self.chunker = Chunker(chunk_size=250, overlap=25)
+
+        # Storage paths (data dir may exist even if model isn't loaded yet)
+        data_dir = Path(__file__).parent.parent / "data" / "faiss_db"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        self.index_file = data_dir / f"{collection_name}.index"
+        self.metadata_file = data_dir / f"{collection_name}_metadata.pkl"
+
+        # FAISS index and metadata structures
+        self.index = faiss.IndexFlatL2(self.embedding_dim)
+        self.metadata_store = {}
+        self.index_to_chunk_id = []
+
+        # Try to load pre-existing index from disk (no model import required)
+        self._load_index()
+
     def _load_embedding_model(self):
         """Attempt to import and instantiate the sentence-transformers model.
 
@@ -185,6 +205,16 @@ class VectorStore:
     ) -> List[Dict]:
         """Perform semantic search."""
         preprocessed_query = self.preprocessor.preprocess(query)
+
+        # If embeddings aren't available, attempt to load them; if that
+        # fails, return no results rather than raising an exception so the
+        # caller can handle lack of model gracefully.
+        if self.embedding_model is None:
+            try:
+                self._load_embedding_model()
+            except Exception:
+                return []
+
         query_embedding = self.embedding_model.encode(
             preprocessed_query,
             convert_to_numpy=True,

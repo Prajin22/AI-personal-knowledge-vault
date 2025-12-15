@@ -223,6 +223,8 @@ The frontend will be available at `http://localhost:3000`
 
 ## Model Information
 
+**Note (Answer Generator):** The RAG-based answer generator uses `transformers` and `torch` which are large optional dependencies. The server will start without them and will use a lightweight fallback; install full dependencies (`pip install -r requirements.txt`) to enable AI answer generation.
+
 ### Embedding Model
 - **Model**: `all-MiniLM-L6-v2` (BERT-based)
 - **Size**: ~80MB

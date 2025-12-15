@@ -12,7 +12,12 @@ app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-producti
 vector_store = VectorStore()
 summarizer = Summarizer()
 note_manager = NoteManager(vector_store, summarizer)
-answer_generator = AnswerGenerator()
+answer_generator = AnswerGenerator(load_model=False)
+# Model loading for the answer generator is deferred to first use to
+# avoid long startup times and heavy imports (transformers/torch). If
+# the model isn't available at runtime, the service will use a fallback.
+if getattr(answer_generator, '_load_error', None):
+    app.logger.warning("Answer generator model not loaded: %s", answer_generator._load_error)
 
 # If the embedding model couldn't be loaded at startup, warn but keep the app running.
 if vector_store.embedding_model is None:
