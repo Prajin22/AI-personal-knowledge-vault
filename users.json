@@ -1,0 +1,21 @@
+{
+  "e594d5ea-a709-451f-995c-9d0396cdc66a": {
+    "email": "prajinbreto@gmail.com",
+    "password_hash": "scrypt:32768:8:1$rPVblpxALrHRdJJO$d1ed08970c791243f401296373f0b2da9746dffbed1b93b4513f07dfad57494dc99d4e420f20f8cbf3db3384b08df4f143c01286688e2582ce34ee6cecd39511"
+  },
+  "fb5c85fc-a811-462d-acb6-c50b176f2748": {
+    "email": "zazunayagan143@gmail.com",
+    "username": "zazu",
+    "password_hash": "scrypt:32768:8:1$aODB60hqN8jiBPjT$9fa560c7ee0ac04a1404a7c2976157315e6545c57332c400a2b803e9a122fd24b4063409fe7072947aa3f53ad697af5d2d5deef11eef74b8b0a99ca94602c8a0"
+  },
+  "a61fd4de-ae1d-40c8-99c0-889be51356c6": {
+    "email": "pranavchowdary@gmail.com",
+    "username": "pranav",
+    "password_hash": "scrypt:32768:8:1$CQg3uMUsr6xDUVDA$a04d0afe839b065adac36442138b29ce0d97760d6281ccb7f84da9f9c60dcf373e5e7d6cb3c9d2a12ba4fb19597a2760b6cc6e93b17f0705843ad411493141a1"
+  },
+  "c691ff63-b5bf-404a-98e2-2026563ebfb3": {
+    "email": "team09@gmail.com",
+    "username": "hint",
+    "password_hash": "scrypt:32768:8:1$KSXqIoHQRthmFWrg$b7a721dcad9d889d12ae67d97b9b26e04aa371db4527ea77ac032a43447b1fbcb6138c004d3082dd54101ff516f803634ec055699ddf7ab058bced6041402806"
+  }
+}

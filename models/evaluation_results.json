@@ -1,0 +1,112 @@
+{
+  "timestamp": "2026-02-21T18:19:45.620475",
+  "model_path": "models\\ai_education_model",
+  "device": "cpu",
+  "basic_functionality": {
+    "Hello! Can you help me learn about machine learning?": " Sure, I can help you learn about Machine Learning. It is a process of learning how to use a machine to create new machines.",
+    "What is supervised learning?": " It is learning about how to use a computer and how to do it efficiently.",
+    "Explain neural networks in simple terms.": " Neural Networks is a network that provides high-quality internet access to a wide range of communities.",
+    "How does gradient descent work?": " gradient is a way of describing how long it takes to complete a task",
+    "What are the differences between classification and regression?": " Regression is a state of mind and aversion to change."
+  },
+  "academic_performance": {
+    "Explain the concept of overfitting in machine learning and how to prevent it.": {
+      "response": " Overfutting is when you overconsumption of one or more parts of a machine, making it more difficult to maintain.",
+      "expected_concepts": [
+        "overfitting",
+        "validation",
+        "regularization",
+        "cross-validation"
+      ],
+      "word_count": 19,
+      "contains_concepts": []
+    },
+    "What is the difference between bagging and boosting ensemble methods?": {
+      "response": " Bagging refers to the process of transporting goods or items with a bag.",
+      "expected_concepts": [
+        "bagging",
+        "boosting",
+        "random forest",
+        "gradient boosting"
+      ],
+      "word_count": 13,
+      "contains_concepts": [
+        "bagging"
+      ]
+    },
+    "How do convolutional neural networks work for image classification?": {
+      "response": " I'm not sure but I do know that they have been around since the 1970's.",
+      "expected_concepts": [
+        "convolution",
+        "filters",
+        "pooling",
+        "feature maps"
+      ],
+      "word_count": 15,
+      "contains_concepts": []
+    },
+    "Explain the attention mechanism in transformer architectures.": {
+      "response": " I am not sure what you are talking about. Can you explain?",
+      "expected_concepts": [
+        "attention",
+        "transformer",
+        "self-attention",
+        "encoder-decoder"
+      ],
+      "word_count": 12,
+      "contains_concepts": []
+    }
+  },
+  "conversation_continuity": {
+    "Learning progression": {
+      "conversation": [
+        {
+          "user": "I'm new to machine learning. Can you explain what it is?",
+          "assistant": " It is a machine that makes small circuits of metal or plastic."
+        },
+        {
+          "user": "That makes sense. Now what about neural networks?",
+          "assistant": " Neural Networks is a network that covers a wide range of communications."
+        },
+        {
+          "user": "How do I train a neural network?",
+          "assistant": " You train the neurotic network. It is a group of neurological processes that are used to train people."
+        },
+        {
+          "user": "What are some common problems I might encounter?",
+          "assistant": " Well, there are a lot of things. I'm not sure what you mean by \"Common\" problems."
+        }
+      ],
+      "coherence_score": 1.0
+    },
+    "Concept building": {
+      "conversation": [
+        {
+          "user": "Explain supervised learning.",
+          "assistant": " I'm trying to learn about supervise learning. It's a process of teaching students how to do things efficiently."
+        },
+        {
+          "user": "How does it differ from unsupervised learning?",
+          "assistant": " I think it's just that it's easier to learn from a teacher."
+        },
+        {
+          "user": "Can you give me examples of both?",
+          "assistant": " Well, I'm not sure what you mean by that. Can you elaborate?"
+        },
+        {
+          "user": "Which one should I learn first?",
+          "assistant": " I would start with the first one. It is the most important one to learn."
+        }
+      ],
+      "coherence_score": 1.0
+    }
+  },
+  "summary": {
+    "total_tests": 0,
+    "average_concept_coverage": 0.0625,
+    "average_response_length": 14.75,
+    "conversation_coherence": 1.0,
+    "overall_score": 0.4135,
+    "academic_tests": 4
+  }
+}

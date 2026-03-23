@@ -2,10 +2,70 @@
 
 {% block title %}Create Note - AI Knowledge Vault{% endblock %}
 
+{% block extra_head %}
+<style>
+    .file-upload {
+        margin: 20px 0;
+        padding: 20px;
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .file-upload:hover {
+        border-color: #666;
+        background-color: #f9f9f9;
+    }
+    .file-upload.dragover {
+        border-color: #4CAF50;
+        background-color: #e8f5e9;
+    }
+    .file-info {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #666;
+    }
+    .progress-container {
+        display: none;
+        margin: 15px 0;
+    }
+    .progress-bar {
+        height: 20px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+    .progress {
+        height: 100%;
+        width: 0;
+        background-color: #4CAF50;
+        transition: width 0.3s;
+    }
+    .status-message {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+    }
+    .success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="form-container">
     <h1>Create New Note</h1>
-    <form method="POST" action="{{ url_for('create_note') }}">
+    <form id="noteForm" method="POST" action="{{ url_for('create_note') }}" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Title *</label>
             <input type="text" id="title" name="title" required placeholder="Enter note title...">
@@ -14,6 +74,29 @@
         <div class="form-group">
             <label for="content">Content *</label>
             <textarea id="content" name="content" rows="15" required placeholder="Enter note content..."></textarea>
+        </div>
+        
+        <div class="file-upload" id="dropZone">
+            <div class="file-upload-content">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: #666;"></i>
+                <p>Drag & drop a file here or click to upload</p>
+                <p class="file-info">Supported formats: PDF, DOCX, XLSX, XLS, CSV</p>
+                <input type="file" id="fileInput" name="file" style="display: none;" accept=".pdf,.docx,.xlsx,.xls,.csv">
+            </div>
+        </div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="train_model" name="train_model" value="yes" checked>
+                Train AI model with this document (improves future answers)
+            </label>
         </div>
         
         <div class="form-group">
@@ -32,5 +115,127 @@
         </div>
     </form>
 </div>
-{% endblock %}
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const statusMessage = document.getElementById('statusMessage');
+    const noteForm = document.getElementById('noteForm');
+    const contentTextarea = document.getElementById('content');
+    const titleInput = document.getElementById('title');
+    const trainModelCheckbox = document.getElementById('train_model');
+    
+    // Handle drag and drop
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileUpload(fileInput.files[0]);
+        }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFileUpload(e.target.files[0]);
+        }
+    });
+    
+    function showStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        statusMessage.className = 'status-message ' + (isError ? 'error' : 'success');
+        statusMessage.style.display = 'block';
+        
+        if (!isError) {
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 3000);
+        }
+    }
+    
+    function handleFileUpload(file) {
+        // Show file info
+        const fileInfo = dropZone.querySelector('.file-info');
+        fileInfo.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        
+        // Show progress container
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        
+        // Simulate progress
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            if (progress > 90) clearInterval(interval);
+            progressBar.style.width = `${progress}%`;
+        }, 100);
+        
+        // Create FormData
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('train_model', trainModelCheckbox && trainModelCheckbox.checked ? 'yes' : 'no');
+        
+        // Send file to server
+        fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            clearInterval(interval);
+            progressBar.style.width = '100%';
+            
+            if (data.error) {
+                showStatus(`Error: ${data.error}`, true);
+                return;
+            }
+            
+            // Update form with extracted content
+            if (data.content) {
+                contentTextarea.value = data.content;
+            }
+            
+            // Set title from filename if title is empty
+            if (!titleInput.value) {
+                const fileName = file.name.split('.').slice(0, -1).join('.');
+                titleInput.value = fileName;
+            }
+            
+            showStatus('Document processed successfully! AI is learning from it...');
+            
+            // Hide progress after delay
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+            }, 2000);
+        })
+        .catch(error => {
+            clearInterval(interval);
+            showStatus(`Upload failed: ${error.message}`, true);
+        });
+    }
+    
+    // Prevent form submission during file upload
+    noteForm.addEventListener('submit', function(e) {
+        if (progressContainer.style.display === 'block') {
+            e.preventDefault();
+            showStatus('Please wait for the current upload to complete', true);
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - AI Study Assistant{% endblock %}
+
+{% block content %}
+<!-- Navigation Bar -->
+<nav class="nav-bar">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <div class="ai-flame">
+                <div class="flame-core"></div>
+                <div class="flame-outer"></div>
+            </div>
+            <span class="brand-text">AI Study Assistant</span>
+        </div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}" class="nav-link">
+                <i class="fas fa-book"></i>
+                <span>Notes</span>
+            </a>
+            <a href="{{ url_for('stats') }}" class="nav-link">
+                <i class="fas fa-chart-line"></i>
+                <span>Insights</span>
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('account') }}" class="nav-link">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-link logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="nav-link login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="main-content">
+    <!-- Privacy Policy Section -->
+    <section class="privacy-section">
+        <div class="section-header">
+            <h2><i class="fas fa-shield-alt"></i> Privacy Policy</h2>
+            <p>Last updated: February 22, 2026</p>
+        </div>
+
+        <div class="privacy-content">
+            <div class="privacy-card">
+                <h3>1. Introduction</h3>
+                <p>AI Study Assistant ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI Study Assistant service.</p>
+                
+                <h3>2. Information We Collect</h3>
+                <p><strong>Personal Information:</strong> When you register for an account, we collect:</p>
+                <ul>
+                    <li>Email address</li>
+                    <li>Username</li>
+                    <li>Password (encrypted)</li>
+                    <li>Account creation date</li>
+                </ul>
+                
+                <p><strong>Content and Usage Data:</strong> We collect information you provide and how you use our service:</p>
+                <ul>
+                    <li>Study notes and documents you upload</li>
+                    <li>Chat conversations with AI assistant</li>
+                    <li>Search queries and learning patterns</li>
+                    <li>Device and browser information</li>
+                    <li>IP address and location data</li>
+                </ul>
+                
+                <h3>3. How We Use Your Information</h3>
+                <p>We use your information to:</p>
+                <ul>
+                    <li>Provide and maintain our AI Study Assistant service</li>
+                    <li>Process and analyze your study materials</li>
+                    <li>Generate personalized AI responses and recommendations</li>
+                    <li>Improve our AI models and service quality</li>
+                    <li>Communicate with you about service updates</li>
+                    <li>Analyze usage patterns to enhance user experience</li>
+                    <li>Ensure security and prevent fraud</li>
+                </ul>
+                
+                <h3>4. AI and Machine Learning</h3>
+                <p><strong>AI Processing:</strong> Your uploaded content and interactions are processed by our AI systems to provide personalized learning assistance. This includes:</p>
+                <ul>
+                    <li>Content analysis and summarization</li>
+                    <li>Question answering and explanations</li>
+                    <li>Personalized learning recommendations</li>
+                    <li>Semantic search and content organization</li>
+                </ul>
+                
+                <p><strong>Model Training:</strong> We may use anonymized data to improve our AI models. Your personal information is never used for model training without explicit consent.</p>
+                
+                <h3>5. Data Security</h3>
+                <p>We implement robust security measures to protect your information:</p>
+                <ul>
+                    <li>End-to-end encryption for data transmission</li>
+                    <li>Encrypted storage for sensitive data</li>
+                    <li>Regular security audits and updates</li>
+                    <li>Access controls and authentication systems</li>
+                    <li>Secure data backup and recovery</li>
+                </ul>
+                
+                <h3>6. Data Retention</h3>
+                <p>We retain your information for as long as necessary to:</p>
+                <ul>
+                    <li>Provide our services to you</li>
+                    <li>Fulfill legal and regulatory requirements</li>
+                    <li>Resolve disputes and enforce our agreements</li>
+                    <li>Maintain security and prevent abuse</li>
+                </ul>
+                
+                <p>You can request deletion of your account and associated data at any time.</p>
+                
+                <h3>7. Third-Party Services</h3>
+                <p>We may share information with trusted third parties for:</p>
+                <ul>
+                    <li>Cloud hosting and infrastructure</li>
+                    <li>AI model processing and analysis</li>
+                    <li>Analytics and service improvement</li>
+                    <li>Customer support and communication</li>
+                </ul>
+                
+                <p>All third parties are contractually bound to protect your information and use it only for specified purposes.</p>
+                
+                <h3>8. Your Rights and Choices</h3>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access your personal information</li>
+                    <li>Correct inaccurate information</li>
+                    <li>Delete your account and data</li>
+                    <li>Opt out of certain data processing</li>
+                    <li>Export your data in a portable format</li>
+                    <li>Restrict processing of sensitive information</li>
+                </ul>
+                
+                <h3>9. Cookies and Tracking</h3>
+                <p>We use cookies and similar technologies to:</p>
+                <ul>
+                    <li>Maintain your session and preferences</li>
+                    <li>Analyze service usage and performance</li>
+                    <li>Personalize your experience</li>
+                    <li>Remember your login status</li>
+                </ul>
+                
+                <p>You can control cookies through your browser settings.</p>
+                
+                <h3>10. International Data Transfers</h3>
+                <p>Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place for international data transfers.</p>
+                
+                <h3>11. Children's Privacy</h3>
+                <p>Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13. If we become aware of such collection, we will delete it immediately.</p>
+                
+                <h3>12. Changes to This Policy</h3>
+                <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
+                
+                <h3>13. Contact Us</h3>
+                <p>If you have questions about this Privacy Policy or wish to exercise your rights, please contact us:</p>
+                <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i> privacy@aistudyassistant.com</p>
+                    <p><i class="fas fa-globe"></i> www.aistudyassistant.com</p>
+                </div>
+                
+                <div class="privacy-footer">
+                    <p><strong>Effective Date:</strong> February 22, 2026</p>
+                    <p>This Privacy Policy is part of our commitment to transparency and user privacy. By using AI Study Assistant, you acknowledge that you have read and understood this policy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Floating Chat Widget -->
+<div class="chat-widget" id="chat-widget">
+    <div class="chat-toggle" id="chat-toggle">
+        <div class="ai-avatar">
+            <div class="avatar-glow"></div>
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="chat-indicator" id="chat-indicator">
+            <span class="indicator-dot"></span>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chat-container">
+        <div class="chat-header">
+            <div class="chat-title">
+                <i class="fas fa-robot"></i>
+                <span>AI Study Assistant</span>
+            </div>
+            <button class="chat-close" id="chat-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message ai-message welcome-message">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <p>Hello! I'm your AI study assistant. I can help you learn about artificial intelligence, machine learning, and data science. What would you like to explore today?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Ask me anything about AI/ML..." autocomplete="off">
+                <button class="send-button" id="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="chat-typing" id="chat-typing" style="display: none;">
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span class="typing-text">AI is thinking...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification System -->
+<div class="notifications" id="notifications"></div>
+{% endblock %}

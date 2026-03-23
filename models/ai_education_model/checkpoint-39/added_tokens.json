@@ -1,0 +1,11 @@
+{
+  "<mask>": 8008,
+  "[ALGORITHM]": 8014,
+  "[APPLICATION]": 8015,
+  "[CONCEPT]": 8011,
+  "[EXAMPLE]": 8010,
+  "[EXPLAIN]": 8009,
+  "[FORMULA]": 8013,
+  "[PREREQUISITE]": 8012,
+  "[QUIZ]": 8016
+}

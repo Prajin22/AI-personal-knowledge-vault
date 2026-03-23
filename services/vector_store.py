@@ -47,31 +47,12 @@ class VectorStore:
         try:
             from sentence_transformers import SentenceTransformer
             self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        except Exception:
-            # Leave embedding_model as None and re-raise so callers can handle.
-            raise
-        
-        # Initialize preprocessing and chunking
-        self.preprocessor = Preprocessor()
-        self.chunker = Chunker(chunk_size=250, overlap=25)
-        
-        # Storage paths
-        data_dir = Path(__file__).parent.parent / "data" / "faiss_db"
-        data_dir.mkdir(parents=True, exist_ok=True)
-        
-        self.index_file = data_dir / f"{collection_name}.index"
-        self.metadata_file = data_dir / f"{collection_name}_metadata.pkl"
-        
-        self.index = faiss.IndexFlatL2(self.embedding_dim)
-        
-        # Metadata storage: {chunk_id: {text, metadata, note_id, chunk_index}}
-        self.metadata_store = {}
-        
-        # Track order of chunks in FAISS index (index -> chunk_id mapping)
-        self.index_to_chunk_id = []
-        
-        # Load existing index if available
-        self._load_index()
+            self._load_error = None
+            return True
+        except Exception as e:
+            self._load_error = str(e)
+            print(f"Failed to load embedding model: {e}")
+            return False
     
     def _load_index(self):
         """Load FAISS index and metadata from disk."""

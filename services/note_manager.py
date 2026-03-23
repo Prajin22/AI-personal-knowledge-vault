@@ -194,47 +194,139 @@ class NoteManager:
         return True
     
     def semantic_search(self, query: str, limit: int = 10) -> List[Dict]:
-        """Perform semantic search across notes."""
-        vector_results = self.vector_store.search(query, limit=limit)
-        enriched_results = []
-        seen_note_ids = set()
+        """Perform semantic search across notes with enhanced error handling.
         
-        for result in vector_results:
-            note_id = result.get("note_id")
-            if not note_id or note_id in seen_note_ids:
-                continue
+        Args:
+            query: The search query string
+            limit: Maximum number of results to return
             
-            seen_note_ids.add(note_id)
-            note = self._load_note_file(note_id)
-            if note:
-                enriched_results.append({
-                    **note,
-                    "similarity": result["similarity"],
-                    "distance": result["distance"],
-                    "matched_chunk": result.get("text", "")[:200]
-                })
-        
-        return enriched_results
-    
-    def get_stats(self) -> Dict:
-        """Get statistics about the knowledge vault."""
-        total_notes = len(self.index)
-        categories = {}
-        tags_count = {}
+        Returns:
+            List of dictionaries containing note information and relevance scores
+        """
+        if not query or not query.strip():
+            return []
+            
+        try:
+            # Try vector search first
+            vector_results = self.vector_store.search(query, limit=limit)
+            
+            if not vector_results:
+                return self._fallback_text_search(query, limit)
+                
+            enriched_results = []
+            seen_note_ids = set()
+            
+            for result in vector_results:
+                try:
+                    note_id = result.get('note_id')
+                    if not note_id or note_id in seen_note_ids:
+                        continue
+                                
+                    note = self.get_note(note_id)
+                    if note:
+                        enriched_result = {
+                            'id': note_id,
+                            'title': note.get('title', 'Untitled'),
+                            'content': note.get('content', ''),
+                            'similarity': float(result.get('similarity', 0.0)),
+                            'score': float(result.get('distance', 0.0)),
+                            'metadata': result.get('metadata', {}),
+                            'snippet': self._generate_snippet(note.get('content', ''), query),
+                            'tags': note.get('tags', []),
+                            'category': note.get('category')
+                        }
+                        enriched_results.append(enriched_result)
+                        seen_note_ids.add(note_id)
+                        
+                        if len(enriched_results) >= limit:
+                            break
+                except Exception as e:
+                    print(f"Error processing search result: {e}")
+                    continue
+                            
+            return enriched_results
+            
+        except Exception as e:
+            print(f"Error in semantic search: {e}")
+            # Fall back to basic text search if vector search fails
+            return self._fallback_text_search(query, limit)
+            
+    def _fallback_text_search(self, query: str, limit: int) -> List[Dict]:
+        """Fallback to basic text search when vector search is not available."""
+        query = query.lower().strip()
+        results = []
         
         for note_id, note_info in self.index.items():
-            category = note_info.get("category") or "Uncategorized"
-            categories[category] = categories.get(category, 0) + 1
-            
-            for tag in note_info.get("tags", []):
-                tags_count[tag] = tags_count.get(tag, 0) + 1
+            try:
+                note = self.get_note(note_id)
+                if not note:
+                    continue
+                    
+                content = f"{note.get('title', '')} {note.get('content', '')}".lower()
+                if query in content:
+                    results.append({
+                        'id': note_id,
+                        'title': note.get('title', 'Untitled'),
+                        'content': note.get('content', ''),
+                        'similarity': 0.5,  # Default similarity for text search
+                        'score': 1.0,  # Default score for text search
+                        'metadata': {},
+                        'snippet': self._generate_snippet(note.get('content', ''), query),
+                        'tags': note.get('tags', []),
+                        'category': note.get('category')
+                    })
+                    
+                    if len(results) >= limit:
+                        break
+            except Exception as e:
+                print(f"Error in fallback text search for note {note_id}: {e}")
+                continue
+                
+        return results
         
-        return {
-            "total_notes": total_notes,
-            "categories": categories,
-            "total_tags": len(tags_count),
-            "top_tags": dict(sorted(tags_count.items(), key=lambda x: x[1], reverse=True)[:10])
+    def _generate_snippet(self, content: str, query: str, max_length: int = 200) -> str:
+        """Generate a text snippet around the query match."""
+        if not content or not query:
+            return content[:max_length] if content else ""
+            
+        query = query.lower()
+        content_lower = content.lower()
+        pos = content_lower.find(query)
+        
+        if pos == -1:
+            return content[:max_length] + ("..." if len(content) > max_length else "")
+            
+        # Get some context around the match
+        start = max(0, pos - max_length // 2)
+        end = min(len(content), pos + len(query) + max_length // 2)
+        
+        snippet = content[start:end]
+        if start > 0:
+            snippet = "..." + snippet
+        if end < len(content):
+            snippet = snippet + "..."
+            
+        return snippet
+    
+    def get_stats(self) -> Dict:
+        """Get statistics about notes."""
+        stats = {
+            'total_notes': len(self.index),
+            'categories': {},
+            'tags': {}
         }
+        
+        for note_info in self.index.values():
+            # Count categories
+            category = note_info.get('category')
+            if category:
+                stats['categories'][category] = stats['categories'].get(category, 0) + 1
+                
+            # Count tags
+            for tag in note_info.get('tags', []):
+                stats['tags'][tag] = stats['tags'].get(tag, 0) + 1
+                
+        return stats
     
     def get_categories(self) -> List[str]:
         """Get all unique categories"""
